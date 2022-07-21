@@ -72,6 +72,7 @@ class _LoginState extends State<Login> {
         setState(() {
           progress = false;
         });
+        
         Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: (ctx) => Home()));
       }
@@ -204,17 +205,17 @@ class _LoginState extends State<Login> {
                         ],
                         borderRadius: BorderRadius.circular(40),
                         color: Colors.white),
-                    child: OutlineButton(
-                      splashColor: Colors.grey,
+                    child: TextButton(
                       onPressed: () {
                         login();
                         // Navigator.of(context).push(
                         //     MaterialPageRoute(builder: (context) => Home()));
                       },
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(40)),
-                      highlightElevation: 1,
-                      borderSide: BorderSide(color: Colors.white),
+
+                      // shape: RoundedRectangleBorder(
+                      //     borderRadius: BorderRadius.circular(40)),
+                      // highlightElevation: 1,
+                      // borderSide: BorderSide(color: Colors.white),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -245,3 +246,11 @@ class _LoginState extends State<Login> {
     );
   }
 }
+
+OutlineButton(
+    {required MaterialColor splashColor,
+    required Null Function() onPressed,
+    required RoundedRectangleBorder shape,
+    required int highlightElevation,
+    required BorderSide borderSide,
+    required Row child}) {}

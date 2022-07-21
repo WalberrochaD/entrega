@@ -5,6 +5,7 @@ import 'package:ache_entregas/ui/pages/home.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 
@@ -57,59 +58,98 @@ class _SinupVeiculoState extends State<SinupVeiculo> {
     // if (!_form.currentState!.validate()) {
     //   return;
     // }
-
-    final multiPartFilel = http.MultipartFile.fromPath('photo', photo!.path);
-    final toen =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJ3YWxiZXJAZ21haWwuY29tIiwiY3BmIjoiMjExMTU0MDg4MzMiLCJuYW1lIjoiV2FsYmVyIHJvY2hhIiwidHlwZVVzZXIiOiJkZWxpdmVyeW1hbiIsImlhdCI6MTY1NTEzMDQ0Mn0.Hpq3AqntjO51I3BGa7ADSCeYuvOYFzZ3Bns1rWgQ3aU';
-
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    final multiPartFilel = await http.MultipartFile.fromPath(
+      'photo',
+      photo!.path,
+    );
+    // final toen =
+    //     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6OCwiZW1haWwiOiJ3YWxiZXJAZ21haWwuY29tIiwiY3BmIjoiMjExMTU0MDg4MzMiLCJuYW1lIjoiV2FsYmVyIHJvY2hhIiwidHlwZVVzZXIiOiJkZWxpdmVyeW1hbiIsImlhdCI6MTY1NTEzMDQ0Mn0.Hpq3AqntjO51I3BGa7ADSCeYuvOYFzZ3Bns1rWgQ3aU';
+    print(token);
     setState(() {
       progress = true;
     });
+    photo!.path;
+    File(photo!.path);
+    Map<String, String> headers = {"Authorization": "Bearer $token"};
+    var request = new http.MultipartRequest("POST", Uri.parse('$url/vehicle'))
+      ..headers.addAll(headers)
+      ..fields.addAll({
+        "store": jsonEncode({
+          "placa": "4444",
+          "chassi": "241412",
+          "vehicleTypeId": 1,
+          "dealership": "teste2",
+          "modelCar": "teste2"
+        })
+      })
+      ..files.add(multiPartFilel);
+    // var request = new http.MultipartRequest("POST", Uri.parse('$url/vehicle'))
+    //   ..headers.addAll(headers)
+    //   ..fields['store'] = jsonEncode({
+    //     "placa": "4444",
+    //     "chassi": "241412",
+    //     "vehicleTypeId": 1,
+    //     "dealership": "teste2",
+    //     "modelCar": "teste2"
+    //   })
+    //   ..files.add(multiPartFilel);
+    final response = await request.send();
+    print(response.statusCode);
+    print(response.stream);
 
-    await http
-        .post(
-      Uri.parse('$url/vehicle'),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $toen",
-        "photo": '$multiPartFilel',
-      },
-      body: jsonEncode({
-        "placa": "placa",
-        "chassi": "chassi",
-        "vehicleTypeId": 1,
-        "ownerVehicleId": 1,
-        "dealership": "HONDA",
-        "modelCar": "Titan 150"
-      }),
-    )
-        .then((value) {
-      final json = jsonDecode(value.body);
-      print(value.body);
-      print(json);
-      // setState(() {
-      //   progress = false;
-      // });
-      // return ScaffoldMessenger.of(context)
-      //   ..hideCurrentSnackBar()
-      //   ..showSnackBar(
-      //     SnackBar(
-      //       content: Row(
-      //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //         children: <Widget>[
-      //           Text(
-      //             "Usuario não encontrado",
-      //             style: TextStyle(color: Colors.white),
-      //           ),
-      //           Icon(
-      //             Icons.error,
-      //             color: Colors.white,
-      //           ),
-      //         ],
-      //       ),
-      //     ),
-      //   );
-    });
+    // var responsed = await http.Response.fromStream(response);
+    // final responseData = json.decode(responsed.body);
+
+    if (response.statusCode == 200) {
+      print('success');
+      // print(responseData);
+    } else {
+      print('ERROR');
+    }
+
+    // await http.post(Uri.parse('$url/vehicle'), headers: {
+    //   "Content-Type": "multipart/form-data",
+    //   "Authorization":
+    //       "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJ3YWxiZXIzQHRlc3QuY29tIiwiY3BmIjoiMjEzLjEyMy4xMzItMzEiLCJuYW1lIjoid2FsYmVyIiwidHlwZVVzZXIiOiJkZWxpdmVyeW1hbiIsImlhdCI6MTY1ODI3MDU1OX0.6hoY2Mg1fmtnq0vHyEwEK1QoiKvBMNFU1ESO91DiPHo",
+    // }, body: {
+    //   "photo": '$multiPartFilel',
+    //   "store": {
+    //     "placa": "4444",
+    //     "chassi": "241412",
+    //     "vehicleTypeId": 1,
+    //     "dealership": "teste2",
+    //     "modelCar": "teste2"
+    //   }
+    // }).then((value) {
+    //   print(value.body);
+    //   print(value.statusCode);
+    //   final json = jsonDecode(value.body);
+    //   print(json);
+    //   // setState(() {
+    //   //   progress = false;
+    //   // });
+    //   // return ScaffoldMessenger.of(context)
+    //   //   ..hideCurrentSnackBar()
+    //   //   ..showSnackBar(
+    //   //     SnackBar(
+    //   //       content: Row(
+    //   //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    //   //         children: <Widget>[
+    //   //           Text(
+    //   //             "Usuario não encontrado",
+    //   //             style: TextStyle(color: Colors.white),
+    //   //           ),
+    //   //           Icon(
+    //   //             Icons.error,
+    //   //             color: Colors.white,
+    //   //           ),
+    //   //         ],
+    //   //       ),
+    //   //     ),
+    //   //   );
+    // });
   }
 
   @override

@@ -25,7 +25,7 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token') ?? '';
     // token = prefs.clear();
-    Timer.periodic(Duration(seconds: 3), (Timer t) {
+    Timer(Duration(seconds: 3), () {
       // print('Passou no timer');
       // print(DateTime.now());
       // print(DateTime.now().second);
