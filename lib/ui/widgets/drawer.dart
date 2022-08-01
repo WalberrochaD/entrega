@@ -1,3 +1,7 @@
+import 'package:ache_entregas/ui/pages/avaliation.dart';
+import 'package:ache_entregas/ui/pages/payment.dart';
+import 'package:ache_entregas/ui/pages/profile.dart';
+import 'package:ache_entregas/ui/pages/sinup-veiculo.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +21,20 @@ class _AppDrawerState extends State<AppDrawer> {
           .pushReplacement(MaterialPageRoute(builder: (ctx) => MyApp()));
     });
   }
+
+  // String? name;
+  // getName() async {
+  //   SharedPreferences prefs = await SharedPreferences.getInstance();
+  //   setState(() {
+  //     name = prefs.getString('name') ?? '';
+  //   });
+  // }
+
+  // @override
+  // void initState() {
+  //   getName();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +57,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        'Jorge Silva Marinho',
+                        'Walber',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
@@ -57,7 +75,10 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
               ),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (ctx) => ProfilePage()));
+                },
                 child: Row(
                   children: [
                     Padding(
@@ -136,7 +157,10 @@ class _AppDrawerState extends State<AppDrawer> {
               // ),
               // Divider(),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (ctx) => PaymentPage()));
+                },
                 child: Row(
                   children: [
                     Padding(
@@ -156,44 +180,50 @@ class _AppDrawerState extends State<AppDrawer> {
                 ),
               ),
               Divider(),
-              Row(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    child: Icon(
-                      Icons.star,
-                      color: Colors.black,
-                      size: 50,
-                    ),
-                  ),
-                  Text(
-                    'Avaliações',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ],
-              ),
-              Divider(),
               InkWell(
-                onTap: () {},
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (ctx) => AvaliationPage()));
+                },
                 child: Row(
                   children: [
                     Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 8, vertical: 5),
                       child: Icon(
-                        Icons.price_change_outlined,
+                        Icons.star,
                         color: Colors.black,
                         size: 50,
                       ),
                     ),
                     Text(
-                      'Preço por KM',
+                      'Avaliações',
                       style: TextStyle(fontSize: 18),
                     ),
                   ],
                 ),
               ),
+              // Divider(),
+              // InkWell(
+              //   onTap: () {},
+              //   child: Row(
+              //     children: [
+              //       Padding(
+              //         padding: const EdgeInsets.symmetric(
+              //             horizontal: 8, vertical: 5),
+              //         child: Icon(
+              //           Icons.price_change_outlined,
+              //           color: Colors.black,
+              //           size: 50,
+              //         ),
+              //       ),
+              //       Text(
+              //         'Preço por KM',
+              //         style: TextStyle(fontSize: 18),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               Divider(),
               // InkWell(
               //   onTap: () {
@@ -217,42 +247,48 @@ class _AppDrawerState extends State<AppDrawer> {
               //   ),
               // ),
               // Divider(),
-              Row(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    child: Icon(
-                      Icons.motorcycle_outlined,
-                      color: Colors.black,
-                      size: 50,
+              InkWell(
+                onTap: () {
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (ctx) => SinupVeiculo()));
+                },
+                child: Row(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 5),
+                      child: Icon(
+                        Icons.motorcycle_outlined,
+                        color: Colors.black,
+                        size: 50,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Configurar Veiculo',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ],
+                    Text(
+                      'Configurar Veiculo',
+                      style: TextStyle(fontSize: 18),
+                    ),
+                  ],
+                ),
               ),
               Divider(),
-              Row(
-                children: [
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                    child: Icon(
-                      Icons.settings,
-                      color: Colors.black,
-                      size: 50,
-                    ),
-                  ),
-                  Text(
-                    'Configurações',
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ],
-              ),
-              Divider(),
+              // Row(
+              //   children: [
+              //     Padding(
+              //       padding:
+              //           const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              //       child: Icon(
+              //         Icons.settings,
+              //         color: Colors.black,
+              //         size: 50,
+              //       ),
+              //     ),
+              //     Text(
+              //       'Configurações',
+              //       style: TextStyle(fontSize: 18),
+              //     ),
+              //   ],
+              // ),
+              // Divider(),
               InkWell(
                 onTap: () {
                   logout();

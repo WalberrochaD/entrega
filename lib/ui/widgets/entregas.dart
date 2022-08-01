@@ -1,14 +1,18 @@
 import 'dart:convert';
 
 import 'package:ache_entregas/ui/constants.dart';
+import 'package:ache_entregas/ui/models/acceptRequest.dart';
 import 'package:ache_entregas/ui/models/request.dart';
 import 'package:ache_entregas/ui/models/store.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EntregasNotification extends StatefulWidget {
-  final Requests request;
-  const EntregasNotification({required this.request, Key? key})
+  final request;
+  final AcceptRequestModel? acceptRequest;
+  const EntregasNotification(
+      {required this.request, this.acceptRequest, Key? key})
       : super(key: key);
 
   @override
@@ -18,7 +22,7 @@ class EntregasNotification extends StatefulWidget {
 class _EntregasNotificationState extends State<EntregasNotification> {
   bool detail = false;
   Store? store;
-  bool loading = true;
+  bool loading = false;
 
   Future loadStore() async {
     http.get(Uri.parse('$url/store/${widget.request.storeId}')).then((value) {
@@ -29,11 +33,39 @@ class _EntregasNotificationState extends State<EntregasNotification> {
     });
   }
 
-  @override
-  void initState() {
-    loadStore();
-    super.initState();
+  acceptRequest() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    http
+        .post(
+      Uri.parse('$url/requestSendFreelancer'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token'
+      },
+      body: jsonEncode(
+        {
+          'statusId': 5,
+          'statusSendId': widget.request['statusId'],
+          'userDeliverId': 2,
+          'storeId': widget.request['storeId'],
+          'productId': widget.request['productId'],
+          'productFoodId': widget.request['productFoodId'],
+          'requestId': widget.request['id'],
+        },
+      ),
+    )
+        .then((value) {
+      print(value.body);
+      print(value.statusCode);
+    });
   }
+
+  // @override
+  // void initState() {
+  //   loadStore();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -119,7 +151,8 @@ class _EntregasNotificationState extends State<EntregasNotification> {
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   child: Text(
-                                    store!.address!.street.toString(),
+                                    'Rua: ${widget.request['address']['street']}',
+                                    // store!.address!.street.toString(),
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
@@ -127,7 +160,8 @@ class _EntregasNotificationState extends State<EntregasNotification> {
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   child: Text(
-                                    store!.address!.number.toString(),
+                                    'Número: ${widget.request['address']['number']}',
+                                    // store!.address!.number.toString(),
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
@@ -135,7 +169,8 @@ class _EntregasNotificationState extends State<EntregasNotification> {
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   child: Text(
-                                    store!.address!.city.toString(),
+                                    'Cidade: ${widget.request['address']['city']}',
+                                    // store!.address!.city.toString(),
                                     style: TextStyle(color: Colors.white),
                                   ),
                                 ),
@@ -188,7 +223,7 @@ class _EntregasNotificationState extends State<EntregasNotification> {
                                   TextStyle(color: Colors.grey, fontSize: 20),
                             ),
                             Text(
-                              'Alexandre de Souza',
+                              widget.request['user']['name'],
                               style: TextStyle(
                                   color: backgroundColor, fontSize: 20),
                             ),
@@ -197,46 +232,51 @@ class _EntregasNotificationState extends State<EntregasNotification> {
                             ),
                             Row(
                               children: [
-                                Container(
-                                  padding: EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.orange,
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: <BoxShadow>[
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 5.0,
-                                        offset: Offset(0.0, 0.75),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    'ACEITAR',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 20),
-                                  ),
-                                ),
-                                Container(
-                                  padding: EdgeInsets.all(5),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(5),
-                                    boxShadow: <BoxShadow>[
-                                      BoxShadow(
-                                        color: Colors.black26,
-                                        blurRadius: 5.0,
-                                        offset: Offset(0.0, 0.75),
-                                      ),
-                                    ],
-                                  ),
-                                  child: Text(
-                                    'RECUSAR',
-                                    style: TextStyle(
-                                      color: backgroundColor,
-                                      fontSize: 20,
+                                InkWell(
+                                  onTap: () {
+                                    acceptRequest();
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.all(5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.orange,
+                                      borderRadius: BorderRadius.circular(5),
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                          color: Colors.black26,
+                                          blurRadius: 5.0,
+                                          offset: Offset(0.0, 0.75),
+                                        ),
+                                      ],
+                                    ),
+                                    child: Text(
+                                      'ACEITAR',
+                                      style: TextStyle(
+                                          color: Colors.white, fontSize: 20),
                                     ),
                                   ),
                                 ),
+                                // Container(
+                                //   padding: EdgeInsets.all(5),
+                                //   decoration: BoxDecoration(
+                                //     color: Colors.white,
+                                //     borderRadius: BorderRadius.circular(5),
+                                //     boxShadow: <BoxShadow>[
+                                //       BoxShadow(
+                                //         color: Colors.black26,
+                                //         blurRadius: 5.0,
+                                //         offset: Offset(0.0, 0.75),
+                                //       ),
+                                //     ],
+                                //   ),
+                                //   child: Text(
+                                //     'RECUSAR',
+                                //     style: TextStyle(
+                                //       color: backgroundColor,
+                                //       fontSize: 20,
+                                //     ),
+                                //   ),
+                                // ),
                               ],
                             ),
                             SizedBox(
@@ -252,7 +292,8 @@ class _EntregasNotificationState extends State<EntregasNotification> {
                                   TextStyle(color: Colors.grey, fontSize: 20),
                             ),
                             Text(
-                              store!.fantasyName.toString(),
+                              widget.request['store']['fantasyName'],
+                              // store!.fantasyName.toString(),
                               style: TextStyle(
                                   color: backgroundColor, fontSize: 20),
                             ),

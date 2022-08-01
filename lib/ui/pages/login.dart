@@ -44,7 +44,7 @@ class _LoginState extends State<Login> {
         .then((value) {
       final json = jsonDecode(value.body);
       print(json);
-      if (json['error'] == "Usuario Não Encontrado") {
+      if (json['error'] == "Usuario Não Encontrado" || value.statusCode != 200) {
         setState(() {
           progress = false;
         });
@@ -67,15 +67,16 @@ class _LoginState extends State<Login> {
               ),
             ),
           );
-      } else if (json['token'].toString().isNotEmpty) {
+      } else if (json['token'].toString().isNotEmpty && value.statusCode == 200) {
         prefs.setString('token', json['token'].toString());
-        setState(() {
-          progress = false;
-        });
+        print(json['token'].toString());
         
         Navigator.of(context)
             .pushReplacement(MaterialPageRoute(builder: (ctx) => Home()));
       }
+        setState(() {
+          progress = false;
+        });
     });
   }
 

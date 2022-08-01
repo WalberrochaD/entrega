@@ -6,6 +6,7 @@ import 'package:ache_entregas/ui/widgets/drawer.dart';
 import 'package:ache_entregas/ui/widgets/entregas.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 enum FilterOptions {
   Novas,
@@ -23,18 +24,26 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool button = true;
   var scaffoldey = GlobalKey<ScaffoldState>();
-  List<Requests> request = [];
-  bool loading = true;
+  List request = [];
+  bool loading = false;
 
   Future getRequests() async {
-    await http.get(Uri.parse('$url/requestsReadyToDelivery'), headers: {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    print(token);
+    await http.get(Uri.parse('$url/allRequest'), headers: {
       "Content-Type": "application/json",
-      "Authorization":
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ3YWxiZXJAdGVzdC5jb20iLCJjcGYiOiIxMjM0NTIyMTkyOCIsIm5hbWUiOiJNZXVOb21lIiwidHlwZVVzZXIiOiJhZG1pbiIsImlhdCI6MTY0OTY4NDI2NX0.wHauTTJ_AIm_KybjTjfOavXyPsDGuTC52EIl0U2w0RU"
+      "Authorization": "Bearer $token"
     }).then((value) {
       setState(() {
         Iterable lista = json.decode(value.body);
-        request = lista.map((e) => Requests.fromJson(e)).toList();
+        for (var re in lista.map((e) => e)) {
+          if(re['status']['id'] == 5) {
+          setState(() {
+            request.add(re);
+          });
+          }
+        }
         loading = false;
       });
       print(request);
@@ -42,14 +51,16 @@ class _HomeState extends State<Home> {
   }
 
   Future getInProgress() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
+    print(token);
     setState(() {
       request.clear();
       loading = true;
     });
     await http.get(Uri.parse('$url/myDeliverysInProgress'), headers: {
       "Content-Type": "application/json",
-      "Authorization":
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ3YWxiZXJAdGVzdC5jb20iLCJjcGYiOiIxMjM0NTIyMTkyOCIsIm5hbWUiOiJNZXVOb21lIiwidHlwZVVzZXIiOiJhZG1pbiIsImlhdCI6MTY0OTY4NDI2NX0.wHauTTJ_AIm_KybjTjfOavXyPsDGuTC52EIl0U2w0RU"
+      "Authorization": "Bearer $token"
     }).then((value) {
       setState(() {
         Iterable lista = json.decode(value.body);
@@ -61,14 +72,15 @@ class _HomeState extends State<Home> {
   }
 
   Future getDeliverysFinalized() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String token = prefs.getString('token') ?? '';
     setState(() {
       request.clear();
       loading = true;
     });
     await http.get(Uri.parse('$url/myDeliverysFinalized'), headers: {
       "Content-Type": "application/json",
-      "Authorization":
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ3YWxiZXJAdGVzdC5jb20iLCJjcGYiOiIxMjM0NTIyMTkyOCIsIm5hbWUiOiJNZXVOb21lIiwidHlwZVVzZXIiOiJhZG1pbiIsImlhdCI6MTY0OTY4NDI2NX0.wHauTTJ_AIm_KybjTjfOavXyPsDGuTC52EIl0U2w0RU"
+      "Authorization": "Bearer $token"
     }).then((value) {
       setState(() {
         Iterable lista = json.decode(value.body);
@@ -308,12 +320,13 @@ class _HomeState extends State<Home> {
                                 width: size.width,
                                 height: size.height - size.height * 0.4,
                                 child: ListView.builder(
-                                    itemCount: request.length,
-                                    itemBuilder: (context, index) {
-                                      return EntregasNotification(
-                                        request: request[index],
-                                      );
-                                    }),
+                                  itemCount: request.length,
+                                  itemBuilder: (context, index) {
+                                    return EntregasNotification(
+                                      request: request[index],
+                                    );
+                                  },
+                                ),
                               )
                             : Container()
                   ],

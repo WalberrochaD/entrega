@@ -109,6 +109,7 @@ class _SinupAdressPageState extends State<SinupAdressPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Algo deu errado, verifique os dados!')));
+        Navigator.of(context).pop();
         setState(() => _isLoading = false);
       }
     });
