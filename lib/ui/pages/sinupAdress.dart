@@ -94,9 +94,17 @@ class _SinupAdressPageState extends State<SinupAdressPage> {
     await http
         .post(Uri.parse('$url/userDeliver/register'),
             headers: {"Content-Type": "application/json"},
-            body: jsonEncode(user.toJson()))
+            body: jsonEncode({
+              "cep": _cepController.text,
+              "cnh": widget.cnh,
+              "cpf": widget.cpf,
+              "dataNc": '2022-04-05T20:45:13.758Z',
+              "email": widget.email,
+              "name": widget.name,
+              "password": widget.password,
+            }))
         .then((value) {
-          final json = jsonDecode(value.body);
+      final json = jsonDecode(value.body);
       print('body: ${value.body}');
       print('status: ${value.statusCode}');
       if (value.statusCode == 200) {

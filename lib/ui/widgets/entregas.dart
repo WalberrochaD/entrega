@@ -45,12 +45,12 @@ class _EntregasNotificationState extends State<EntregasNotification> {
       },
       body: jsonEncode(
         {
-          'statusId': 5,
-          'statusSendId': widget.request['statusId'],
+          'statusId': 4,
+          'statusSendId': 1,
           'userDeliverId': 2,
           'storeId': widget.request['storeId'],
-          'productId': widget.request['productId'],
-          'productFoodId': widget.request['productFoodId'],
+          'productsId': widget.request['productsId'],
+          'productsFoodId': widget.request['productsFoodId'],
           'requestId': widget.request['id'],
         },
       ),

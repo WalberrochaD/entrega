@@ -17,8 +17,9 @@ class Primeira extends StatelessWidget {
           child: Column(
             children: [
               Container(
+                padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top + 10),
                 width: size.width,
-                height: 200,
+                height: 250,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.only(
                     bottomRight: Radius.circular(30),
@@ -26,6 +27,7 @@ class Primeira extends StatelessWidget {
                   ),
                   color: Colors.white,
                 ),
+                child: Image.asset("assets/logo.png", width: 30, fit: BoxFit.cover,),
               ),
               SizedBox(
                 height: 100,
@@ -43,7 +45,7 @@ class Primeira extends StatelessWidget {
               ),
               Image.asset('assets/icons/home/seta.png', scale: 2,),
               SizedBox(
-                height: 70,
+                height: 50,
               ),
               InkWell(
                 onTap: () {

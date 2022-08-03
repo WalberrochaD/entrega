@@ -50,8 +50,8 @@ class _MyAppState extends State<MyApp> {
       ),
       home: _splash == true
           ? Container(
-              color: Colors.black87,
-              child: Center(child: FlutterLogo()),
+              color: Colors.white,
+              child: Center(child: Image.asset("assets/logo.png")),
             )
           : token == ''
               ? Primeira()
