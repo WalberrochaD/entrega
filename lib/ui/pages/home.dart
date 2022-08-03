@@ -28,6 +28,9 @@ class _HomeState extends State<Home> {
   bool loading = false;
 
   Future getRequests() async {
+    setState(() {
+      loading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
     print(token);
@@ -38,13 +41,15 @@ class _HomeState extends State<Home> {
       setState(() {
         Iterable lista = json.decode(value.body);
         for (var re in lista.map((e) => e)) {
-          if(re['status']['id'] == 5) {
-          setState(() {
-            request.add(re);
-          });
+          if (re['status']['id'] == 5) {
+            setState(() {
+              request.add(re);
+            });
           }
         }
-        loading = false;
+        setState(() {
+          loading = false;
+        });
       });
       print(request);
     });
