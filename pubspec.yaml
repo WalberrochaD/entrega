@@ -32,10 +32,18 @@ dependencies:
   shared_preferences: ^2.0.6
   image_picker: ^0.8.5+3
   table_calendar: ^3.0.3
+  
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  flutter_launcher_icons: ^0.8.1
+
+flutter_icons: 
+  image_path: "assets/logo.png"
+  android: true
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -91,3 +99,4 @@ flutter:
     - assets/icons/home/seta.png
     - assets/icons/home/fundo.png
     - assets/icons/cadastro/foto.png
+    - assets/logo.png
