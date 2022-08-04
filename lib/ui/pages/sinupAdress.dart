@@ -77,10 +77,10 @@ class _SinupAdressPageState extends State<SinupAdressPage> {
 
   bool _isLoading = false;
   register() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       _isLoading = true;
     });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     UserModel user = UserModel(
       cep: _cepController.text,
       cnh: widget.cnh,
@@ -153,9 +153,12 @@ class _SinupAdressPageState extends State<SinupAdressPage> {
               SizedBox(
                 height: 10,
               ),
-              InkWell(
-                onTap: () {
-                  register();
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    _isLoading = true;
+                  });
+                  // register();
                 },
                 child: Container(
                   width: size.width * 0.6,

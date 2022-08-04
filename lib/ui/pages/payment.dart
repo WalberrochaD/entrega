@@ -46,7 +46,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   Text(
-                    '999,60',
+                    '00,00',
                     style: TextStyle(fontSize: 35, color: Colors.white),
                   )
                 ],

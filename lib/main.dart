@@ -55,7 +55,7 @@ class _MyAppState extends State<MyApp> {
             )
           : token == ''
               ? Primeira()
-              : SinupVeiculo(),
+              : Home(),
     );
   }
 }

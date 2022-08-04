@@ -47,7 +47,6 @@ class _EntregasNotificationState extends State<EntregasNotification> {
         {
           'statusId': 4,
           'statusSendId': 1,
-          'userDeliverId': 2,
           'storeId': widget.request['storeId'],
           'productsId': widget.request['productsId'],
           'productsFoodId': widget.request['productsFoodId'],
@@ -61,11 +60,21 @@ class _EntregasNotificationState extends State<EntregasNotification> {
     });
   }
 
-  // @override
-  // void initState() {
-  //   loadStore();
-  //   super.initState();
-  // }
+  double weight = 0;
+
+  @override
+  void initState() {
+    // loadStore();
+    // print(widget.request['productId']);
+    // print(widget.request['productFoodId']);
+    // print(widget.request['id']);
+    setState(() {
+      weight = double.parse(
+          widget.request["product"]["weight"].toString().replaceAll(",", "."));
+    });
+    print(weight);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +188,18 @@ class _EntregasNotificationState extends State<EntregasNotification> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Text(
-                                'A',
+                                weight <= 0.5
+                                    ? '1A'
+                                    : weight > 500 && weight <= 1
+                                        ? "1B"
+                                        : weight > 1 && weight <= 2
+                                            ? "1C"
+                                            : weight > 2 && weight <= 5
+                                            ? "2D" :weight > 5 && weight <= 7
+                                            ? "2E": weight > 7 && weight <= 10
+                                            ? "3F": weight > 10 && weight <= 15
+                                            ? "3G": weight > 15
+                                            ? "3H": "--",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 35,
