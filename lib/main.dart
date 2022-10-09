@@ -1,14 +1,17 @@
 import 'dart:async';
 
+import 'package:ache_entregas/ui/models/location.dart';
 import 'package:ache_entregas/ui/pages/primeira.dart';
 import 'package:ache_entregas/ui/pages/sinup-veiculo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ui/pages/home.dart';
 
 void main() {
   runApp(MyApp());
+  Location().getPosition();
 }
 
 class MyApp extends StatefulWidget {
@@ -20,10 +23,12 @@ class _MyAppState extends State<MyApp> {
   bool _splash = true;
 
   var token;
+  String? vehicle;
 
   void splash() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token') ?? '';
+    vehicle = prefs.getString('vehicle');
     // token = prefs.clear();
     Timer(Duration(seconds: 3), () {
       // print('Passou no timer');
@@ -43,19 +48,33 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Ache Entregas',
-      theme: ThemeData(
-        primarySwatch: Colors.orange,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => Location())
+      ],
+      child: MaterialApp(
+        title: 'Ache Entregas',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          primarySwatch: Colors.orange,
+        ),
+        home: _splash == true
+            ? Container(
+                color: Colors.white,
+                child: Center(child: Image.asset("assets/logo.png")),
+              )
+            :  token == ''
+                ? Primeira()
+                : vehicle == '' ? SinupVeiculo(view: false,): Home(),
       ),
-      home: _splash == true
-          ? Container(
-              color: Colors.white,
-              child: Center(child: Image.asset("assets/logo.png")),
-            )
-          : token == ''
-              ? Primeira()
-              : Home(),
     );
   }
 }
+
+// "{  
+//   'placa': '4444',         
+//   'chassi': '3466',          
+//   'vehicleTypeId': 1,         
+//   'dealership': 'teste2',
+//   'modelCar': 'teste2'
+// }"

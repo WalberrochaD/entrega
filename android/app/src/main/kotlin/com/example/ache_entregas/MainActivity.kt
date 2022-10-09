@@ -1,4 +1,4 @@
-package com.example.ache_entregas
+package com.ache.entregas
 
 import io.flutter.embedding.android.FlutterActivity
 

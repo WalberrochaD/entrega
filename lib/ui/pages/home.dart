@@ -1,12 +1,16 @@
 import 'dart:convert';
 
 import 'package:ache_entregas/ui/constants.dart';
+import 'package:ache_entregas/ui/models/allrequest.dart';
 import 'package:ache_entregas/ui/models/request.dart';
 import 'package:ache_entregas/ui/widgets/drawer.dart';
 import 'package:ache_entregas/ui/widgets/entregas.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../models/location.dart';
 
 enum FilterOptions {
   Novas,
@@ -24,29 +28,43 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   bool button = true;
   var scaffoldey = GlobalKey<ScaffoldState>();
-  List request = [];
+  List<AllRequestModel> request = [];
   bool loading = false;
+  String filter = 'getNews';
+  String? photo;
 
   Future getRequests() async {
     setState(() {
       loading = true;
+      request.clear();
     });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
+    setState(() {
+      photo = prefs.getString("photo") ?? "";
+    });
     print(token);
     await http.get(Uri.parse('$url/allRequest'), headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token"
     }).then((value) {
+      print(value.statusCode);
       setState(() {
         Iterable lista = json.decode(value.body);
-        for (var re in lista.map((e) => e)) {
-          if (re['status']['id'] == 5) {
+        List<AllRequestModel> requestt =
+            lista.map((e) => AllRequestModel.fromJson(e)).toList();
+        for (var re in requestt) {
+          if (re.requests!.statusId == 6) {
+            print(re);
             setState(() {
               request.add(re);
             });
           }
         }
+        request.sort((a, b) =>
+            DateTime.parse(a.createdAt!).isAfter(DateTime.parse(b.createdAt!))
+                ? 1
+                : -1);
         setState(() {
           loading = false;
         });
@@ -58,54 +76,82 @@ class _HomeState extends State<Home> {
   Future getInProgress() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
-    print(token);
+    String id = prefs.getString('id') ?? '';
+    print("DeliverId: $id");
     setState(() {
       request.clear();
       loading = true;
     });
-    await http.get(Uri.parse('$url/myDeliverysInProgress'), headers: {
+    await http.get(Uri.parse('$url/allRequest'), headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token"
     }).then((value) {
       setState(() {
         Iterable lista = json.decode(value.body);
-        request = lista.map((e) => Requests.fromJson(e)).toList();
-        loading = false;
+        List<AllRequestModel> requestt =
+            lista.map((e) => AllRequestModel.fromJson(e)).toList();
+        print(lista.length);
+        for (var re in requestt) {
+          if (re.requests!.deliverId.toString() == id &&
+              re.requests!.statusId == 4) {
+            setState(() {
+              request.add(re);
+            });
+          }
+        }
+        setState(() {
+          loading = false;
+        });
       });
-      print(request);
+      print(request.length);
     });
   }
 
   Future getDeliverysFinalized() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String token = prefs.getString('token') ?? '';
+    String id = prefs.getString('id') ?? '';
+    print("DeliverId: $id");
     setState(() {
       request.clear();
       loading = true;
     });
-    await http.get(Uri.parse('$url/myDeliverysFinalized'), headers: {
+    await http.get(Uri.parse('$url/allRequest'), headers: {
       "Content-Type": "application/json",
       "Authorization": "Bearer $token"
     }).then((value) {
       setState(() {
         Iterable lista = json.decode(value.body);
-        request = lista.map((e) => Requests.fromJson(e)).toList();
-        loading = false;
+        List<AllRequestModel> requestt =
+            lista.map((e) => AllRequestModel.fromJson(e)).toList();
+        print(lista.length);
+        for (var re in requestt) {
+          if (re.requests!.deliverId.toString() == id &&
+              re.requests!.statusId == 5) {
+            setState(() {
+              request.add(re);
+            });
+          }
+        }
+        setState(() {
+          loading = false;
+        });
       });
-      print(request);
+      print(request.length);
     });
   }
 
-  Future acceptRequest() async {
-    await http.put(Uri.parse('$url/deliveringRequest/:requestId'), headers: {
-      "Content-Type": "application/json",
-      "Authorization":
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ3YWxiZXJAdGVzdC5jb20iLCJjcGYiOiIxMjM0NTIyMTkyOCIsIm5hbWUiOiJNZXVOb21lIiwidHlwZVVzZXIiOiJhZG1pbiIsImlhdCI6MTY0OTY4NDI2NX0.wHauTTJ_AIm_KybjTjfOavXyPsDGuTC52EIl0U2w0RU"
-    });
-  }
+  // Future acceptRequest() async {
+  //   await http.put(Uri.parse('$url/deliveringRequest/:requestId'), headers: {
+  //     "Content-Type": "application/json",
+  //     "Authorization":
+  //         "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ3YWxiZXJAdGVzdC5jb20iLCJjcGYiOiIxMjM0NTIyMTkyOCIsIm5hbWUiOiJNZXVOb21lIiwidHlwZVVzZXIiOiJhZG1pbiIsImlhdCI6MTY0OTY4NDI2NX0.wHauTTJ_AIm_KybjTjfOavXyPsDGuTC52EIl0U2w0RU"
+  //   });
+  // }
 
   @override
   void initState() {
+    Location().getPosition();
     getRequests();
     super.initState();
   }
@@ -134,12 +180,15 @@ class _HomeState extends State<Home> {
                   setState(
                     () {
                       if (selectedValue == FilterOptions.Novas) {
+                        filter = 'getNews';
                         getRequests();
                       }
                       if (selectedValue == FilterOptions.Em) {
+                        filter = 'getInProgess';
                         getInProgress();
                       }
                       if (selectedValue == FilterOptions.Entregues) {
+                        filter = 'getFinalized';
                         getDeliverysFinalized();
                       }
                     },
@@ -172,9 +221,10 @@ class _HomeState extends State<Home> {
               width: size.width,
               height: size.height,
               decoration: BoxDecoration(
-                color: Colors.black26,
+                color: Colors.black,
                 image: DecorationImage(
                   image: AssetImage('assets/icons/home/fundo.png'),
+                  opacity: 0.6,
                   fit: BoxFit.cover,
                 ),
               ),
@@ -203,10 +253,12 @@ class _HomeState extends State<Home> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(150),
-                        child: Image.network(
-                          'https://st3.depositphotos.com/9881890/13396/i/600/depositphotos_133960224-stock-photo-smiling-young-man.jpg',
-                          fit: BoxFit.cover,
-                        ),
+                        child: photo == null
+                            ? Icon(Icons.person)
+                            : Image.network(
+                                photo!,
+                                fit: BoxFit.cover,
+                              ),
                       ),
                     ),
                     Container(
@@ -321,17 +373,45 @@ class _HomeState extends State<Home> {
                             color: Colors.white,
                           )
                         : button == true
-                            ? Container(
-                                width: size.width,
-                                height: size.height - size.height * 0.4,
-                                child: ListView.builder(
-                                  itemCount: request.length,
-                                  itemBuilder: (context, index) {
-                                    return EntregasNotification(
-                                      request: request[index],
-                                    );
-                                  },
-                                ),
+                            ? Expanded(
+                                // width: size.width,
+                                // height: size.height - size.height * 0.4,
+                                child: request.isEmpty
+                                    ? Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: Text(
+                                          "Nenhuma entrega",
+                                          style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 25,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      )
+                                    : ChangeNotifierProvider<Location>(
+                                        create: (context) => Location(),
+                                        child: Builder(
+                                          builder: (context) {
+                                            final locale =
+                                                context.watch<Location>();
+                                            String message = locale.erro == ''
+                                                ? ''
+                                                : locale.erro;
+                                            return ListView.builder(
+                                              itemCount: request.length,
+                                              itemBuilder: (context, index) {
+                                                return EntregasNotification(
+                                                  request: request[index],
+                                                  locationPermission: message,
+                                                  functionCallBack: () {
+                                                    getRequests();
+                                                  },
+                                                  filter: filter,
+                                                );
+                                              },
+                                            );
+                                          },
+                                        )),
                               )
                             : Container()
                   ],

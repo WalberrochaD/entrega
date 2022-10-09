@@ -60,35 +60,38 @@ class _SinupState extends State<Sinup> {
   widgetTextField(TextEditingController controler, TextInputType textInputType,
       String labelText, String? Function(String?)? validator, {bool? obscureText}) {
     final size = MediaQuery.of(context).size;
-    return TextFormField(
-      controller: controler,
-      keyboardType: textInputType,
-      validator: validator,
-      obscureText: obscureText == null ? false : true,
-      decoration: InputDecoration(
-        labelText: labelText,
-        labelStyle: TextStyle(
-            color: Colors.white,
-            fontSize: size.height * 0.03,
-            fontFamily: font1),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(50),
-          borderSide: BorderSide(color: Colors.white, width: 1.0),
+    return Container(
+      height: 50,
+      child: TextFormField(
+        controller: controler,
+        keyboardType: textInputType,
+        validator: validator,
+        obscureText: obscureText == null ? false : true,
+        decoration: InputDecoration(
+          labelText: labelText,
+          labelStyle: TextStyle(
+              color: Colors.white,
+              fontSize: size.height * 0.022,
+              fontFamily: font1),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50),
+            borderSide: BorderSide(color: Colors.white, width: 1.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(50),
+            borderSide: BorderSide(color: Colors.white, width: 1.0),
+          ),
+          // errorBorder: InputBorder.none,
+          // focusedErrorBorder: InputBorder.none,
+          // errorStyle: TextStyle(
+          //   color: Color.fromARGB(255, 233, 120, 120),
+          // ),
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(50),
-          borderSide: BorderSide(color: Colors.white, width: 1.0),
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 15,
+          fontFamily: font1,
         ),
-        // errorBorder: InputBorder.none,
-        // focusedErrorBorder: InputBorder.none,
-        // errorStyle: TextStyle(
-        //   color: Color.fromARGB(255, 233, 120, 120),
-        // ),
-      ),
-      style: TextStyle(
-        color: Colors.white,
-        fontSize: 15,
-        fontFamily: font1,
       ),
     );
   }

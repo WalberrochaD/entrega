@@ -16,25 +16,29 @@ class AppDrawer extends StatefulWidget {
 class _AppDrawerState extends State<AppDrawer> {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
+    prefs.remove('name');
+    prefs.remove('email');
+    prefs.remove('cpf');
+    prefs.remove('id');
     await prefs.remove('token').then((value) {
       Navigator.of(context)
           .pushReplacement(MaterialPageRoute(builder: (ctx) => MyApp()));
     });
   }
 
-  // String? name;
-  // getName() async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   setState(() {
-  //     name = prefs.getString('name') ?? '';
-  //   });
-  // }
+  String? name;
+  getName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      name = prefs.getString('name') ?? '';
+    });
+  }
 
-  // @override
-  // void initState() {
-  //   getName();
-  //   super.initState();
-  // }
+  @override
+  void initState() {
+    getName();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +61,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        'Walber',
+                        '$name',
                         style: TextStyle(
                           fontSize: 20,
                           color: Colors.white,
@@ -250,7 +254,7 @@ class _AppDrawerState extends State<AppDrawer> {
               InkWell(
                 onTap: () {
                   Navigator.of(context).push(
-                      MaterialPageRoute(builder: (ctx) => SinupVeiculo()));
+                      MaterialPageRoute(builder: (ctx) => SinupVeiculo(view: true,)));
                 },
                 child: Row(
                   children: [

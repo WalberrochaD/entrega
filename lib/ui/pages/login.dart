@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:ache_entregas/ui/pages/home.dart';
+import 'package:ache_entregas/ui/pages/sinup-veiculo.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,7 +44,6 @@ class _LoginState extends State<Login> {
     )
         .then((value) {
       final json = jsonDecode(value.body);
-      print(json);
       if (json['error'] == "Usuario Não Encontrado" || value.statusCode != 200) {
         setState(() {
           progress = false;
@@ -68,11 +68,47 @@ class _LoginState extends State<Login> {
             ),
           );
       } else if (json['token'].toString().isNotEmpty && value.statusCode == 200) {
-        prefs.setString('token', json['token'].toString());
         print(json['token'].toString());
-        
-        Navigator.of(context)
-            .pushReplacement(MaterialPageRoute(builder: (ctx) => Home()));
+        http.get(Uri.parse('$url/usersDeliver'), headers: {
+          'Authorization': 'Bearer ${json['token'].toString()}'
+        }).then((value) {
+          Iterable map = jsonDecode(value.body);
+          print("ampppp $map");
+          for (var user in map) {
+            print(user['email']);
+            print(_emailController.text);
+            if (user['email'] == _emailController.text) {
+              print(user);
+              prefs.setString('token', json['token'].toString());
+              prefs.setString('name', user['name'].toString());
+              prefs.setString('email', user['email'].toString());
+              prefs.setString('cpf', user['cpf'].toString());
+              prefs.setString('id', user['id'].toString());
+              prefs.setString('photo', user['photo'].toString());
+              if(user['vehicle'] != null) {
+
+              prefs.setString('vehicleId', user['vehicle']['id'].toString());
+              prefs.setString('photoVehicle', user['vehicle']['photo'].toString());
+              prefs.setString('placa', user['vehicle']['placa'].toString());
+              prefs.setString('chassi', user['vehicle']['chassi'].toString());
+              prefs.setString('vehicleTypeId', user['vehicle']['vehicleTypeId'].toString());
+              prefs.setString('dealership', user['vehicle']['dealership'].toString());
+              prefs.setString('modelCar', user['vehicle']['modelCar'].toString());
+              prefs.setString('ownerVehicleId', user['vehicle']['ownerVehicleId'].toString());
+          Navigator.of(context)
+              .pushReplacement(MaterialPageRoute(builder: (ctx) => Home()));
+              } else {
+                prefs.setString('vehicle', '');
+          Navigator.of(context)
+              .pushReplacement(MaterialPageRoute(builder: (ctx) => SinupVeiculo(view: false,)));
+              }
+            }
+          }
+          setState(() {
+            progress = false;
+          });
+          
+        });
       }
         setState(() {
           progress = false;

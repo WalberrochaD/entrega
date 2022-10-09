@@ -45,5 +45,7 @@
 	<string>Pode ser acessado a biblioteca?</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Pode ser acessado a camera?</string>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
 </dict>
 </plist>

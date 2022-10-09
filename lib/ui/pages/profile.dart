@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../constants.dart';
 import '../widgets/masked.dart';
@@ -12,17 +13,37 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final GlobalKey<FormState> _form = GlobalKey();
-  final TextEditingController _nameController = TextEditingController();
-
-  final TextEditingController _cnhController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
+  TextEditingController _cnhController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
   var _cpfController = MaskedTextController(mask: '000.000.000-00');
   var _telController = MaskedTextController(mask: '(00)00000-0000');
   var _dataNCController = MaskedTextController(mask: '00/00/0000');
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
   bool selectIn = false;
+
+  String? name;
+  String? email;
+  String? cpf;
+  String? photoUrl;
+
+  getInformations() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      name = prefs.getString('name') ?? '';
+      email = prefs.getString('email') ?? '';
+      cpf = prefs.getString('cpf') ?? '';
+      photoUrl = prefs.getString("photo") ?? "";
+      _emailController = TextEditingController(text: email);
+      _nameController = TextEditingController(text: name);
+      _cpfController = MaskedTextController(mask: '000.000.000-00', text: cpf);
+    });
+  }
+
+  @override
+  void initState() {
+    getInformations();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +81,15 @@ class _ProfilePageState extends State<ProfilePage> {
                             color: Colors.white),
                         height: 90,
                         width: 90,
+                        child: photoUrl == null ? Icon(
+                          Icons.person,
+                          size: 45,
+                          color: backgroundColor,
+                        ) : ClipRRect(
+                          borderRadius: BorderRadius.circular(150),
+                          child: Image.network(photoUrl ?? "",
+                          fit: BoxFit.cover,),
+                        )
                       ),
                     ),
                     Column(
@@ -67,7 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Walber',
+                          '$name',
                           style: TextStyle(color: Colors.white),
                         ),
                         SizedBox(
@@ -125,16 +155,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             (value) {
                           if (value!.length < 10) {
                             return "       Cpf inválido";
-                          }
-                          return null;
-                        })),
-                    Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: size.height * 0.02, vertical: 5),
-                        child: widgetTextField(
-                            _cnhController, TextInputType.text, 'CNH', (value) {
-                          if (value!.length < 9) {
-                            return "       Núme inválido";
                           }
                           return null;
                         })),

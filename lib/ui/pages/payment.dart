@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:ache_entregas/ui/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class PaymentPage extends StatefulWidget {
   const PaymentPage({Key? key}) : super(key: key);
@@ -11,11 +15,41 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
+  String? photoUrl;
+  double? balance;
+
+  getInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await http.get(Uri.parse('https://www.asaas.com/api/v3/finance/balance'),
+        headers: {
+          "access_token":
+              "\$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAyMDkwODg6OiRhYWNoXzQyYTZmZTFjLWRhNDctNDk4OS1hNTU1LWMzYjQ0ZGJmOTQwYg=="
+        }).then((value) {
+          final response = jsonDecode(value.body);
+          balance = response['balance'];
+    });
+    setState(() {
+      photoUrl = prefs.getString("photo") ?? "";
+    });
+  }
+
+  @override
+  void initState() {
+    getInfo();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        leading: TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Icon(Icons.navigate_before, color: Colors.white, size: 35,)),
+      ),
       body: Container(
         width: size.width,
         height: size.height,
@@ -27,8 +61,13 @@ class _PaymentPageState extends State<PaymentPage> {
               width: 80,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(150),
-                color: Colors.black,
               ),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(150),
+                  child: photoUrl == null ? Center(child: CircularProgressIndicator(),): Image.network(
+                    photoUrl ?? "",
+                    fit: BoxFit.cover,
+                  )),
             ),
             Container(
               padding: const EdgeInsets.all(10),
@@ -46,7 +85,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     style: TextStyle(fontSize: 16, color: Colors.white),
                   ),
                   Text(
-                    '00,00',
+                    balance == null ? '0,00' :  '${balance!.toStringAsFixed(2).replaceAll('.', ',')}',
                     style: TextStyle(fontSize: 35, color: Colors.white),
                   )
                 ],

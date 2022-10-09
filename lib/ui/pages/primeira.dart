@@ -37,13 +37,13 @@ class Primeira extends StatelessWidget {
                   'Vamos \n Trabalhar?',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                      fontSize: 50, color: Colors.white, fontFamily: font1),
+                      fontSize: 40, color: Colors.white, fontFamily: font1),
                 ),
               ),
               SizedBox(
                 height: 70,
               ),
-              Image.asset('assets/icons/home/seta.png', scale: 2,),
+              Image.asset('assets/icons/home/seta.png', scale: 3,),
               SizedBox(
                 height: 50,
               ),
@@ -57,7 +57,7 @@ class Primeira extends StatelessWidget {
                 },
                 child: Container(
                   width: 250,
-                  height: 60,
+                  // height: 60,
                   decoration: BoxDecoration(
                     boxShadow: <BoxShadow>[
                       BoxShadow(
@@ -74,7 +74,7 @@ class Primeira extends StatelessWidget {
                       'Me cadastrar',
                       style: TextStyle(
                         color: Colors.orange[800],
-                        fontSize: 35,fontFamily: font1
+                        fontSize: 30,fontFamily: font1
                       ),
                     ),
                   ),
